@@ -40,6 +40,15 @@ public class UsersController {
 
     }
 
+    @RequestMapping(method = RequestMethod.GET, value = "/getUserIdByEmail")
+    public int getUserIdByEmail(@RequestParam String email)
+    {
+        return userService.getUserIdByEmail(email);
+
+
+    }
+
+
 
 
 

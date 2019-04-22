@@ -4,6 +4,7 @@ import com.disciplinebe.disciplinebe.database.entity.UsersEntity;
 import com.disciplinebe.disciplinebe.database.repository.UsersRepository;
 
 import com.disciplinebe.disciplinebe.model.UserModelRequest;
+import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -43,7 +44,11 @@ public class UserService {
 
     public boolean addUser(UserModelRequest userModelRequest)
     {
+        if(!checkIfEmailExists(userModelRequest.getEmail()))
+        {
+            return false;
 
+        }
         UsersEntity usersEntity=new UsersEntity();
 
         usersEntity.setPassword(userModelRequest.getPassword());
@@ -71,8 +76,8 @@ public class UserService {
 
     public boolean login(String email, String password)
     {
-        UsersEntity usersEntity = usersRepository.findByMail(email);
-        if(usersEntity != null && usersEntity.getEmail().equalsIgnoreCase(email) && usersEntity.getPassword().equals(password))
+        List <UsersEntity> usersEntity = usersRepository.findByMail(email);
+        if(usersEntity != null && usersEntity.get(0).getEmail().equalsIgnoreCase(email) && usersEntity.get(0).getPassword().equals(password))
         {
             return true;
         }
@@ -90,6 +95,29 @@ public class UserService {
             return  false;
         }
 
+    }
+
+    public boolean checkIfEmailExists(String email)
+    {
+        List<UsersEntity> user= usersRepository.findByMail(email);
+        if(user!=null)
+        {
+            return true;
+        }
+        return false;
+    }
+
+    public int getUserIdByEmail(String email)
+    {
+        List<UsersEntity> list = new ArrayList<>();
+         list = usersRepository.findByMail(email);
+        if(list==null)
+        {
+            return 0;
+        }
+        else {
+            return list.get(0).getId();
+        }
     }
 
 

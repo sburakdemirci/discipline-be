@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 
 @Repository
 
@@ -17,7 +19,7 @@ public interface UsersRepository extends JpaRepository<UsersEntity, Integer> {
     UsersEntity findByUid(int uid);
 
     @Query("SELECT ue From UsersEntity ue Where ue.email = ?1")
-    UsersEntity findByMail(String email);
+    List<UsersEntity> findByMail(String email);
 
 
 }

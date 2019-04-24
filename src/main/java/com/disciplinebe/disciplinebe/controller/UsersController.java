@@ -16,7 +16,6 @@ import java.sql.Date;
 @RestController
 @RequestMapping("/users")
 public class UsersController {
-
     @Autowired
     UsersRepository usersRepository;
 
@@ -32,7 +31,7 @@ public class UsersController {
         return userService.addUser(userModelRequest);
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "/login")
+    @RequestMapping(method = RequestMethod.GET, value = "/signIn")
     public boolean login(@RequestParam String email, @RequestParam String password)
     {
         return userService.login(email,password);

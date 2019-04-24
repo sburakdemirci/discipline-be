@@ -15,6 +15,7 @@ import com.disciplinebe.disciplinebe.service.EventDatabaseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,6 +41,18 @@ public class EventController {
         return eventDatabaseService.getEventByUserId(userId);
 
     }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/getEventsByDate")
+    public List<EventEntity> getEventsByDate(@RequestParam Integer userId, @RequestParam Date date) {
+        return eventDatabaseService.getEventsByDate(userId,date);
+
+    }
+
+
+
+
+
+
 
     // event eklendiği zaman slot controller çalışacal
     //toDo pathvariable ve requestparam arasındaki farklı öğren ve diğer annotations'ları

@@ -77,7 +77,7 @@ public class UserService {
     public boolean login(String email, String password)
     {
         List <UsersEntity> usersEntity = usersRepository.findByMail(email);
-        if(usersEntity != null && usersEntity.get(0).getEmail().equalsIgnoreCase(email) && usersEntity.get(0).getPassword().equals(password))
+        if(usersEntity.size()>0 && usersEntity.get(0).getEmail().equalsIgnoreCase(email) && usersEntity.get(0).getPassword().equals(password))
         {
             return true;
         }

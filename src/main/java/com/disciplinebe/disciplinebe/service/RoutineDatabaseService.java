@@ -7,6 +7,7 @@ import com.disciplinebe.disciplinebe.model.RoutineModelRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,6 +49,13 @@ public class RoutineDatabaseService {
         routineEntities=routineRepository.findByUid(userId);
         return  routineEntities;
     }
+    public List<RoutineEntity> findByUserAndDate(int userId, Date date)
+    {
+        List<RoutineEntity> routineEntities = new ArrayList<>();
+        routineEntities=routineRepository.findByUid(userId);
+        return  routineEntities;
+    }
+
 }
 // todo  n routine eklediğin zaman çakışma olursa bildirim göndersin. ve kullanıcıdan kontrol etmesini isteyebilir.
 //  yada bir işlem yapmayıp aynı saatte 2 tane işleme olabilir

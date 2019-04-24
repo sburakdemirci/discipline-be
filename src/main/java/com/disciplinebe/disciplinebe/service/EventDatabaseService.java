@@ -6,6 +6,7 @@ import com.disciplinebe.disciplinebe.model.EventModelRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,6 +47,7 @@ public class EventDatabaseService {
        }
 
 
+
     }
 
     public List<EventEntity> getEventByUserId(int userId) {
@@ -54,6 +56,14 @@ public class EventDatabaseService {
         System.out.println(list);
         return list;
     }
+    public List<EventEntity> getEventsByDate(int userId, Date date) {
+        List<EventEntity> list = new ArrayList<>();
+        list=eventRepository.findByDate(userId,date);
+        System.out.println(list);
+        return list;
+    }
+
+
 
 
 // todo

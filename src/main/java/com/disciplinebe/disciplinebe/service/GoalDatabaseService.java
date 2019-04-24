@@ -55,7 +55,6 @@ public class GoalDatabaseService {
         {
             e.printStackTrace();
             return false;
-
         }
     }
 

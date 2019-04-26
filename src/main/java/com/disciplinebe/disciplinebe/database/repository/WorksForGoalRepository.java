@@ -1,11 +1,13 @@
 package com.disciplinebe.disciplinebe.database.repository;
 
 import com.disciplinebe.disciplinebe.database.entity.WorksForGoalEntity;
-import com.sun.tools.javac.util.List;
+
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.sql.Date;
+import java.util.List;
 
 public interface WorksForGoalRepository extends JpaRepository<WorksForGoalEntity,Integer> {
 

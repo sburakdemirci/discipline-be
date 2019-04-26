@@ -33,7 +33,7 @@ public class EventDatabaseService {
        eventEntity.setEvent_note(eventModelRequest.getEvent_note());
        eventEntity.setNotification_enabled(eventModelRequest.isNotification_enabled());
        eventEntity.setNotification_time(eventModelRequest.getNotification_time());
-       eventEntity.setTime_finish(eventModelRequest.getTime_start());
+       eventEntity.setTime_finish(eventModelRequest.getTime_finish());
        eventEntity.setTime_start(eventModelRequest.getTime_start());
 
        try {

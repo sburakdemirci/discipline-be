@@ -47,7 +47,7 @@ public class UsersController {
 
     }
 
-
+//toDo kullanıcıya ait belirli günlere göre bütün eventleri getir. bu haftalık veya aylık olabilir.
 
 
 

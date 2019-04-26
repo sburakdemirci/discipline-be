@@ -1,10 +1,13 @@
 package com.disciplinebe.disciplinebe.service;
 
 import com.disciplinebe.disciplinebe.database.entity.GoalEntity;
+import com.disciplinebe.disciplinebe.database.entity.WorksForGoalEntity;
 import com.disciplinebe.disciplinebe.database.repository.GoalRepository;
+import com.disciplinebe.disciplinebe.database.repository.WorksForGoalRepository;
 import com.disciplinebe.disciplinebe.model.GoalModelRequest;
 
 
+import com.disciplinebe.disciplinebe.model.TimeSlot;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,8 +32,14 @@ public class GoalDatabaseService {
     @Autowired
     DateConvertService dateConvertService;
 
-    public boolean addGoal(GoalModelRequest goalModelRequest){
+    @Autowired
+    WorksForGoalRepository worksForGoalRepository;
 
+    public boolean addGoal(GoalModelRequest goalModelRequest){
+  //toDo goal eklerken sadece 1 tane eklenebilsin. 1 goal üzerinden git
+        List<GoalEntity> goalEntities =getByUserId(goalModelRequest.getUser_id());
+
+        if(goalEntities.size()>0) return false;
 
         GoalEntity goalEntity=new GoalEntity();
 
@@ -83,8 +92,14 @@ public class GoalDatabaseService {
         return weekCountToDeadline(deadLine)*weeklyHours;
     }
 
+    public List<WorksForGoalEntity> getWorksForGoalByDate(int userId, Date date)
+    {
+        return worksForGoalRepository.findByDateAndUserId(userId,date);
+    }
+
+    // parametreler date,goalid,
 
 
-
+//todo addworkforgoal olunca total çalışma zamanından düşülecek.
 
 }

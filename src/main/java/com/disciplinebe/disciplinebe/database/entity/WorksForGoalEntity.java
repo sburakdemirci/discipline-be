@@ -72,4 +72,12 @@ public class WorksForGoalEntity {
     public void setGoal_id(GoalEntity goal_id) {
         this.goal_id = goal_id;
     }
+
+    public UsersEntity getUser_id() {
+        return user_id;
+    }
+
+    public void setUser_id(UsersEntity user_id) {
+        this.user_id = user_id;
+    }
 }

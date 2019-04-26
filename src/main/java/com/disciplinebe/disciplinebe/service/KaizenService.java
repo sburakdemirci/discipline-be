@@ -1,8 +1,8 @@
 package com.disciplinebe.disciplinebe.service;
 
-import com.disciplinebe.disciplinebe.database.entity.EventEntity;
-import com.disciplinebe.disciplinebe.database.entity.GoalEntity;
-import com.disciplinebe.disciplinebe.database.entity.RoutineEntity;
+import com.disciplinebe.disciplinebe.database.entity.*;
+import com.disciplinebe.disciplinebe.database.repository.GoalRepository;
+import com.disciplinebe.disciplinebe.database.repository.WorksForGoalRepository;
 import com.disciplinebe.disciplinebe.model.TimeSlot;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,10 +12,7 @@ import java.sql.Time;
 import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class KaizenService {
@@ -29,6 +26,12 @@ public class KaizenService {
     @Autowired
     RoutineDatabaseService routineDatabaseService;
 
+    @Autowired
+    WorksForGoalRepository worksForGoalRepository;
+
+    @Autowired
+    GoalRepository goalRepository;
+
 
 
     public List<TimeSlot> getOccupiedSlots(int userId, Date date)
@@ -40,7 +43,7 @@ public class KaizenService {
 
         List<EventEntity> eventEntities = eventDatabaseService.getEventsByDate(userId,date);
 
-        List<GoalEntity> goalEntities = goalDatabaseService.getByUserId(userId);
+        List<WorksForGoalEntity> worksForGoalEntities = goalDatabaseService.getWorksForGoalByDate(userId,date);
         List<RoutineEntity> routineEntities = routineDatabaseService.findByUserId(userId);
 
         for(EventEntity eventEntity:eventEntities)
@@ -51,29 +54,18 @@ public class KaizenService {
            timeSlots.add(timeSlot);
         }
 
-//        for(GoalEntity goalEntity:goalEntities)
-//        {
-//            boolean controlIfExists=false;
-//            String[] splitted = goalEntity.getFree_week_days().split("/");
-//
-//            for(String day: splitted)
-//            {
-//                if(day.equals(dayFromDate)) controlIfExists=true;
-//
-//            }
-//            if(controlIfExists)
-//            {
-//                TimeSlot timeSlot=new TimeSlot();
-//
-//            }
-//
-//            controlIfExists=false;
-//
-//        }
-//
+        for(WorksForGoalEntity worksForGoalEntity:worksForGoalEntities)
+
+        {
+            TimeSlot timeSlot = new TimeSlot();
+            timeSlot.setTimeStart(worksForGoalEntity.getStart_time());
+            timeSlot.setTimeFinish(worksForGoalEntity.getStart_time()+worksForGoalEntity.getDuration());
+            timeSlots.add(timeSlot);
+        }
+
         for (RoutineEntity routineEntity: routineEntities)
         {
-            String[] splitted= routineEntity.getSelected_week_days().split("/");
+            String[] splitted= routineEntity.getSelected_week_days().split(",");
             for(String day: splitted)
             {
                 if(day.equals(dayFromDate))
@@ -89,8 +81,182 @@ public class KaizenService {
 
     return timeSlots;
 
+    }
+
+    public List<TimeSlot> getEmptySlotsByDate (int userId, Date date,int slotStart,int slotFinish)
+    {
+        boolean checkOccupied=false;
+        List<TimeSlot> occupiedSlots = getOccupiedSlots(userId,date);
+        List<TimeSlot> emptySlots = new ArrayList<>();
+        int tmpStart=0;
+        int tmpFinish=0;
+        int lastFinished=0;
+
+        for(int i =slotStart; i<=slotFinish; i++)
+        {
+
+            for(TimeSlot timeSlot:occupiedSlots)
+            {
+                if(i>lastFinished && i>slotStart) break;
+                if(lastFinished<timeSlot.getTimeFinish())
+                {
+                    lastFinished= timeSlot.getTimeFinish();
+                }
+                if( i>=timeSlot.getTimeStart() && i<= timeSlot.getTimeFinish())
+                {
+
+                    checkOccupied=true;
+                }
+            }
+            if(i>lastFinished && i>slotStart)
+            {
+                TimeSlot timeSlot= new TimeSlot();
+                timeSlot.setTimeStart(i);
+                timeSlot.setTimeFinish(slotFinish);
+                emptySlots.add(timeSlot);
+                return emptySlots;
+            }
+
+            if(!checkOccupied)
+            {
+                if(tmpStart>0)
+                {
+                    tmpFinish++;
+                }
+                else
+                {
+                    tmpStart=i;
+                    tmpFinish=i;
+                }
+            }
+            else
+                if((checkOccupied && tmpStart>0) || i>(slotFinish-1))
+                {
+                    TimeSlot timeSlot= new TimeSlot();
+                    timeSlot.setTimeStart(tmpStart);
+                    timeSlot.setTimeFinish(tmpFinish);
+                    emptySlots.add(timeSlot);
+
+                    tmpStart=0;
+                    tmpFinish=0;
+                }
+
+            checkOccupied=false;
+        }
+        return emptySlots;
 
     }
+    public boolean reduceTotalWorkMinutes(UsersEntity user, int duration)
+    {
+        List<GoalEntity> goalEntities = goalDatabaseService.getByUserId(user.getId());
+        if(goalEntities.size()>0)
+        {
+            goalEntities.get(0).setComplated_minutes(goalEntities.get(0).getComplated_minutes()+duration);
+            try {
+                goalRepository.save(goalEntities.get(0));
+                return true;
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+                return false;
+            }
+
+        }
+        return false;
+    }
+
+
+
+    public boolean createWorkForSingleGoal(int userId, Date date )
+    {
+        List<GoalEntity> goalEntities = goalDatabaseService.getByUserId(userId);
+        int disciplineLevel=0;
+        int slotStart=0;
+        int slotFinish=0;
+        boolean checkForSizeEnought=false;
+
+        if(goalEntities.size()>0)
+        {
+            disciplineLevel=goalEntities.get(0).getUser_id().getDiscipline_level();
+            slotStart=goalEntities.get(0).getTime_zone_starts();
+            slotFinish=goalEntities.get(0).getTime_zone_finish();
+
+            List<TimeSlot> timeSlots= getEmptySlotsByDate(userId,date,slotStart,slotFinish);
+
+            for(TimeSlot timeSlot:timeSlots)
+            {
+                if((timeSlot.getTimeFinish()-timeSlot.getTimeStart()) >= (disciplineLevel))
+                {
+                    checkForSizeEnought=true;
+                    break;
+                }
+
+            }
+            if(checkForSizeEnought)
+            {
+                WorksForGoalEntity worksForGoalEntity = new WorksForGoalEntity();
+                worksForGoalEntity.setDate(date);
+                worksForGoalEntity.setDuration(disciplineLevel);
+                worksForGoalEntity.setGoal_id(goalEntities.get(0));
+                worksForGoalEntity.setStart_time(slotStart);
+                worksForGoalEntity.setUser_id(goalEntities.get(0).getUser_id());
+                try {
+                    worksForGoalRepository.save(worksForGoalEntity);
+
+                    return reduceTotalWorkMinutes(goalEntities.get(0).getUser_id(),disciplineLevel);
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+
+            }
+            else
+            {
+                int timeleft = disciplineLevel;
+                for(TimeSlot timeSlot:timeSlots)
+                {
+                    if(timeleft>0)
+                    {
+                        if(timeleft<=(timeSlot.getTimeFinish()-timeSlot.getTimeStart()))
+                        {
+                            WorksForGoalEntity worksForGoalEntity= new WorksForGoalEntity();
+                            worksForGoalEntity.setStart_time(timeSlot.getTimeStart());
+                            worksForGoalEntity.setDuration(timeleft);
+                            worksForGoalEntity.setDate(date);
+                            worksForGoalEntity.setGoal_id(goalEntities.get(0));
+                            worksForGoalEntity.setUser_id(goalEntities.get(0).getUser_id());
+                            worksForGoalRepository.save(worksForGoalEntity);
+                            return reduceTotalWorkMinutes(goalEntities.get(0).getUser_id(),disciplineLevel);
+                        }
+                        else
+                        {
+                            WorksForGoalEntity worksForGoalEntity= new WorksForGoalEntity();
+                            worksForGoalEntity.setStart_time(timeSlot.getTimeStart());
+                            worksForGoalEntity.setDuration((timeSlot.getTimeFinish()-timeSlot.getTimeStart()));
+                            worksForGoalEntity.setDate(date);
+                            worksForGoalEntity.setGoal_id(goalEntities.get(0));
+                            worksForGoalEntity.setUser_id(goalEntities.get(0).getUser_id());
+                            timeleft-=worksForGoalEntity.getDuration();
+                            worksForGoalRepository.save(worksForGoalEntity);
+
+                        }
+
+                    }
+
+                }
+
+            }
+        }
+
+
+        return false;
+    }
+
+
+
+
 
 
 

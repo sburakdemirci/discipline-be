@@ -1,15 +1,19 @@
 package com.disciplinebe.disciplinebe.service;
 
-import com.disciplinebe.disciplinebe.database.entity.UsersEntity;
+import com.disciplinebe.disciplinebe.database.entity.*;
+import com.disciplinebe.disciplinebe.database.repository.EventRepository;
 import com.disciplinebe.disciplinebe.database.repository.UsersRepository;
 
+import com.disciplinebe.disciplinebe.model.EventGoalRoutineModel;
 import com.disciplinebe.disciplinebe.model.UserModelRequest;
 import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.stereotype.Service;
 
 
-import javax.jws.soap.SOAPBinding;
+
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,6 +25,11 @@ public class UserService {
 
     @Autowired
     QuotesDatabaseService quotesDatabaseService;
+
+
+
+
+
 
     public UsersEntity getUserById(int userId)
     {

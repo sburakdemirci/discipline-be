@@ -3,6 +3,7 @@ package com.disciplinebe.disciplinebe.service;
 import com.disciplinebe.disciplinebe.database.entity.*;
 import com.disciplinebe.disciplinebe.database.repository.GoalRepository;
 import com.disciplinebe.disciplinebe.database.repository.WorksForGoalRepository;
+import com.disciplinebe.disciplinebe.model.EventGoalRoutineModel;
 import com.disciplinebe.disciplinebe.model.TimeSlot;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -250,11 +251,79 @@ public class KaizenService {
             }
         }
 
-
         return false;
+    }
+//todo aylara göre gönderebilirsin. bir model yaparsın int month, int year ve list<EventGoalRoutine> olur. kıps
+
+    public List<EventGoalRoutineModel> findEventGoalRoutineByMonth(int userId, int month, int year)
+    {
+
+//        SimpleDateFormat simpleDateformat = new SimpleDateFormat("E"); // the day of the week abbreviated
+//        String dayFromDate= simpleDateformat.format(date);
+        List<EventGoalRoutineModel> eventGoalRoutineModels = new ArrayList<>();
+
+        List<WorksForGoalEntity> worksForGoalEntities = goalDatabaseService.getWorksByDateBetween(userId,month,year);
+        List<EventEntity> eventEntities = eventDatabaseService.getEventsByDateBetween(userId,month,year);
+        List<RoutineEntity> routineEntities= routineDatabaseService.findByUserId(userId);
+
+        for(WorksForGoalEntity worksForGoalEntity:worksForGoalEntities)
+        {
+            EventGoalRoutineModel eventGoalRoutineModel = new EventGoalRoutineModel();
+            eventGoalRoutineModel.setDate(worksForGoalEntity.getDate());
+            eventGoalRoutineModel.setDuration(worksForGoalEntity.getDuration());
+            eventGoalRoutineModel.setId(worksForGoalEntity.getId());
+            eventGoalRoutineModel.setName(worksForGoalEntity.getGoal_id().getGoal_name());
+            eventGoalRoutineModel.setStartSlotTime(worksForGoalEntity.getStart_time());
+            eventGoalRoutineModel.setType("g");
+            eventGoalRoutineModels.add(eventGoalRoutineModel);
+
+        }
+        for(EventEntity eventEntity:eventEntities)
+        {
+            EventGoalRoutineModel eventGoalRoutineModel = new EventGoalRoutineModel();
+            eventGoalRoutineModel.setDate(eventEntity.getEvent_date());
+            eventGoalRoutineModel.setDuration(eventEntity.getTime_finish()-eventEntity.getTime_start());
+            eventGoalRoutineModel.setId(eventEntity.getEvent_id());
+            eventGoalRoutineModel.setName(eventEntity.getEvent_name());
+            eventGoalRoutineModel.setStartSlotTime(eventEntity.getTime_start());
+            eventGoalRoutineModel.setType("e");
+            eventGoalRoutineModels.add(eventGoalRoutineModel);
+        }
+
+//        if(routineEntities.size()>0 )
+//        {
+//            String[] splitted= routineEntities.get(0).getSelected_week_days().split(",");
+//
+//            for(String split: splitted)
+//            {
+//                if(dayFromDate.equalsIgnoreCase(split))
+//                {
+//
+//                    EventGoalRoutineModel eventGoalRoutineModel = new EventGoalRoutineModel();
+//                    eventGoalRoutineModel.setDate(date);
+//                    eventGoalRoutineModel.setDuration(routineEntities.get(0).getTime_finish()-routineEntities.get(0).getTime_start());
+//                    eventGoalRoutineModel.setId(routineEntities.get(0).getRoutine_id());
+//                    eventGoalRoutineModel.setName(routineEntities.get(0).getRoutine_name());
+//                    eventGoalRoutineModel.setStartSlotTime(routineEntities.get(0).getTime_start());
+//                    eventGoalRoutineModel.setType("r");
+//                    eventGoalRoutineModels.add(eventGoalRoutineModel);
+//                }
+//            }
+//
+//
+//
+//        }
+
+        Collections.sort(eventGoalRoutineModels, (o1, o2) -> o1.getStartSlotTime() - o2.getStartSlotTime());
+
+        return eventGoalRoutineModels;
+
+
+
     }
 
 
+    //Todo selected days split yapan fonksiyon
 
 
 

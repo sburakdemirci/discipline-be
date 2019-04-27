@@ -1,33 +1,40 @@
 package com.disciplinebe.disciplinebe.controller;
 
+import com.disciplinebe.disciplinebe.database.entity.EventEntity;
+import com.disciplinebe.disciplinebe.database.entity.RoutineEntity;
 import com.disciplinebe.disciplinebe.database.entity.UsersEntity;
+import com.disciplinebe.disciplinebe.database.entity.WorksForGoalEntity;
 import com.disciplinebe.disciplinebe.database.repository.UsersRepository;
+import com.disciplinebe.disciplinebe.model.EventGoalRoutineModel;
 import com.disciplinebe.disciplinebe.model.UserModelRequest;
-import com.disciplinebe.disciplinebe.service.DisciplineService;
-import com.disciplinebe.disciplinebe.service.GoalDatabaseService;
-import com.disciplinebe.disciplinebe.service.UserService;
+import com.disciplinebe.disciplinebe.service.*;
 import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 import java.sql.Date;
+import java.util.List;
 
 @RestController
 @RequestMapping("/users")
 public class UsersController {
-    @Autowired
-    UsersRepository usersRepository;
 
     @Autowired
     UserService userService;
 
     @Autowired
-    GoalDatabaseService disciplineService;
+    GoalDatabaseService goalDatabaseService;
+
+    @Autowired
+    EventDatabaseService eventDatabaseService;
+
+    @Autowired
+    KaizenService kaizenService;
 
     @RequestMapping(method = RequestMethod.POST, value = "/signUp")
     public boolean addUser(@RequestBody UserModelRequest userModelRequest) {
-
         return userService.addUser(userModelRequest);
     }
 
@@ -35,8 +42,6 @@ public class UsersController {
     public boolean login(@RequestParam String email, @RequestParam String password)
     {
         return userService.login(email,password);
-
-
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/getUserIdByEmail")
@@ -44,16 +49,17 @@ public class UsersController {
     {
         return userService.getUserIdByEmail(email);
 
-
     }
 
+    @RequestMapping(method = RequestMethod.GET, value = "getEventGoalRoutineByDate")
+    public List<EventGoalRoutineModel> getAll (@RequestParam int userId, @RequestParam int month, @RequestParam int year)
+    {
+        return kaizenService.findEventGoalRoutineByMonth(userId,month,year);
+    }
+
+
 //toDo kullanıcıya ait belirli günlere göre bütün eventleri getir. bu haftalık veya aylık olabilir.
-
-
-
-
 }
-
 
 //@RequestParam(required = false) String email yazabilirsin.
 //toDo session yada token verebilirsin.

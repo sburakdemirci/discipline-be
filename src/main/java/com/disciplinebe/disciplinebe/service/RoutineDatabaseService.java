@@ -55,6 +55,7 @@ public class RoutineDatabaseService {
         routineEntities=routineRepository.findByUid(userId);
         return  routineEntities;
     }
+    //todo getirme olayını aylık yapabilirsin.
 
 }
 // todo  n routine eklediğin zaman çakışma olursa bildirim göndersin. ve kullanıcıdan kontrol etmesini isteyebilir.

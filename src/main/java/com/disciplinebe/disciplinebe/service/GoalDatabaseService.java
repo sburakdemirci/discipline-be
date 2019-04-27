@@ -74,6 +74,14 @@ public class GoalDatabaseService {
         return goalEntities;
 
     }
+    public List<WorksForGoalEntity> getWorksByDateBetween(int userId, int month, int year)
+
+    {
+        List<WorksForGoalEntity> worksForGoalEntities = new ArrayList<>();
+        worksForGoalEntities= worksForGoalRepository.findByDateBetween(userId,month,year);
+        return worksForGoalEntities;
+
+    }
 
     public int weekCountToDeadline( Date deadLine)
     {

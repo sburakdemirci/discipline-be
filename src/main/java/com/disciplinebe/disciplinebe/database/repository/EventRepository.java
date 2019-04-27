@@ -19,8 +19,11 @@ public interface EventRepository extends  JpaRepository<EventEntity,Integer> {
     @Query(value = "SELECT * FROM user_event as event WHERE event.user_id= ?1", nativeQuery = true)
     List<EventEntity> findByUid(int uid);
 
-    @Query(value = "SELECT * FROM user_event as event WHERE event.user_id= ?1 AND event.event_date = ?2", nativeQuery = true)
+    @Query(value = "SELECT * FROM user_event  WHERE user_id= ?1 AND event_date = ?2", nativeQuery = true)
     List<EventEntity> findByDate(int uid, Date date);
+
+    @Query(value = "SELECT * FROM user_event WHERE user_id= ?1 AND MONTH(event_date) = ?2 AND YEAR(event_date)= ?3", nativeQuery = true)
+    List<EventEntity> findByDateBetween(int uid, int date, int year);
 
 
 

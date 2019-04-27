@@ -53,15 +53,20 @@ public class EventDatabaseService {
     public List<EventEntity> getEventByUserId(int userId) {
         List<EventEntity> list = new ArrayList<>();
          list=eventRepository.findByUid(userId);
-        System.out.println(list);
         return list;
     }
     public List<EventEntity> getEventsByDate(int userId, Date date) {
         List<EventEntity> list = new ArrayList<>();
         list=eventRepository.findByDate(userId,date);
-        System.out.println(list);
         return list;
     }
+    public List<EventEntity> getEventsByDateBetween(int userId, int month, int year) {
+        List<EventEntity> list = new ArrayList<>();
+        list=eventRepository.findByDateBetween(userId,month,year);
+        return list;
+    }
+
+
 
 
 

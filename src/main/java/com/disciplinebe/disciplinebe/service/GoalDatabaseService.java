@@ -52,7 +52,7 @@ public class GoalDatabaseService {
         goalEntity.setFree_week_days(goalModelRequest.getSelected_week_days());
         goalEntity.setCalculated_minutes(calculateTotalMinutes(goalModelRequest.getWeekly_work_hours(),goalModelRequest.getDeadline()));
         goalEntity.setComplated_minutes(0);
-
+        goalEntity.setTime_zone_starts(goalModelRequest.getTime_zone_starts());
         goalEntity.setTime_zone_finish(goalModelRequest.getTime_zone_finish());
         goalEntity.setWeekly_work_hours(0);
 

@@ -263,7 +263,7 @@ public class KaizenService {
         List<EventGoalRoutineModel> eventGoalRoutineModels = new ArrayList<>();
 
         List<WorksForGoalEntity> worksForGoalEntities = goalDatabaseService.getWorksByDateBetween(userId,month,year);
-        List<EventEntity> eventEntities = eventDatabaseService.getEventsByDateBetween(userId,month,year);
+         List<EventEntity> eventEntities = eventDatabaseService.getEventsByDateBetween(userId,month,year);
         List<RoutineEntity> routineEntities= routineDatabaseService.findByUserId(userId);
 
         for(WorksForGoalEntity worksForGoalEntity:worksForGoalEntities)
@@ -314,7 +314,7 @@ public class KaizenService {
 //
 //        }
 
-        Collections.sort(eventGoalRoutineModels, (o1, o2) -> o1.getStartSlotTime() - o2.getStartSlotTime());
+        Collections.sort(eventGoalRoutineModels, (o1, o2) -> o1.getDate().compareTo(o2.getDate()));
 
         return eventGoalRoutineModels;
 

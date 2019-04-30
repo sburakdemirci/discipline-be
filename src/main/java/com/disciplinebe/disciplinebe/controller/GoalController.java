@@ -62,7 +62,7 @@ public class GoalController {
     @RequestMapping(method = RequestMethod.GET, value = "/addWorkForGoal")
     public boolean addWorkForGoal(@RequestParam Integer goalId, @RequestParam Date date)
     {
-        return kaizenService.createWorkForSingleGoal(goalId,date);
+        return kaizenService.createWorkForWeek(goalId,date);
     }
 
 }

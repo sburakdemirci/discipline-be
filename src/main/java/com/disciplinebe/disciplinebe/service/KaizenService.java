@@ -13,6 +13,7 @@ import java.sql.Time;
 import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -166,9 +167,23 @@ public class KaizenService {
         }
         return false;
     }
+    public boolean createWorkForWeek(int userId, Date date)
+    {
+        //todo diğer oluşturulan goal ları sil
+        boolean check = true;
+        for(int i =1; i<=7 ;i++)
+        {
+            Date tomorrow = new Date(date.getTime()+(1000*60*60*24*i));
+            createWorkForSingleGoal(userId,tomorrow);
+
+        }
+
+        return false;
+
+    }
 
 
-
+// todo work create edilince total'den düş. tekrar create edilirken silinen workleri totale ekle
     public boolean createWorkForSingleGoal(int userId, Date date )
     {
         List<GoalEntity> goalEntities = goalDatabaseService.getByUserId(userId);
@@ -179,6 +194,7 @@ public class KaizenService {
 
         if(goalEntities.size()>0)
         {
+
             disciplineLevel=goalEntities.get(0).getUser_id().getDiscipline_level();
             slotStart=goalEntities.get(0).getTime_zone_starts();
             slotFinish=goalEntities.get(0).getTime_zone_finish();
@@ -190,6 +206,7 @@ public class KaizenService {
                 if((timeSlot.getTimeFinish()-timeSlot.getTimeStart()) >= (disciplineLevel))
                 {
                     checkForSizeEnought=true;
+                    slotStart=timeSlot.getTimeStart();
                     break;
                 }
 

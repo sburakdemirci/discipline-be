@@ -17,4 +17,9 @@ public interface WorksForGoalRepository extends JpaRepository<WorksForGoalEntity
     @Query(value = "SELECT * FROM works_for_goal WHERE user_id= ?1 AND MONTH(date) = ?2 AND YEAR(date) = ?3", nativeQuery = true)
     List<WorksForGoalEntity> findByDateBetween(int uid, int month, int year);
 
+    @Query(value = "DELETE FROM works_for_goal WHERE user_id= ?1 ", nativeQuery = true)
+    List<WorksForGoalEntity> deleteUserWorks(int uid);
+
+
+
 }

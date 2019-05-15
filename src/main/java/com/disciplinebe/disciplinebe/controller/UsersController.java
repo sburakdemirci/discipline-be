@@ -48,13 +48,17 @@ public class UsersController {
     public int getUserIdByEmail(@RequestParam String email)
     {
         return userService.getUserIdByEmail(email);
-
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "getEventGoalRoutineByDate")
+    @RequestMapping(method = RequestMethod.GET, value = "/getEventGoalRoutineByDate")
     public List<EventGoalRoutineModel> getAll (@RequestParam int userId, @RequestParam int month, @RequestParam int year)
     {
         return kaizenService.findEventGoalRoutineByMonth(userId,month,year);
+    }
+    @RequestMapping(method = RequestMethod.GET, value = "/changeUserDisciplineLevel")
+    public boolean changeDisciplineLevel (@RequestParam int userId, @RequestParam int disciplineLevel )
+    {
+        return userService.changeUserDisciplineLevel(userId,disciplineLevel);
     }
 
 

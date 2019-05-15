@@ -17,7 +17,6 @@ public class RoutineDatabaseService {
 
     @Autowired
     RoutineRepository routineRepository;
-
     @Autowired
     UserService userService;
 
@@ -32,7 +31,6 @@ public class RoutineDatabaseService {
         routineEntity.setSelected_days(routineModelRequest.getSelected_week_days());
         routineEntity.setTime_finish(routineModelRequest.getTime_finish());
         routineEntity.setTime_start(routineModelRequest.getTime_start());
-
         try {
             routineRepository.save(routineEntity);
             return true;

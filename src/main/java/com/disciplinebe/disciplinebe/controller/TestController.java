@@ -6,6 +6,7 @@ import com.disciplinebe.disciplinebe.database.entity.TestEntity;
 import com.disciplinebe.disciplinebe.database.repository.EventRepository;
 import com.disciplinebe.disciplinebe.database.repository.TestRepository;
 import com.disciplinebe.disciplinebe.database.repository.UsersRepository;
+import com.disciplinebe.disciplinebe.service.DisciplineService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -29,22 +30,22 @@ public class TestController {
     @Autowired
     TestRepository testRepository;
 
+    @Autowired
+    DisciplineService disciplineService;
+
 
 
 
     //toDo session yada token verebilirsin.
     @RequestMapping(method = RequestMethod.GET, value = "/addQuestion")
-    public boolean addQuestion(@RequestParam Integer userId, @RequestParam String eventName) {
-        try {
-            EventEntity eventEntity = new EventEntity();
-            eventEntity.setEvent_name(eventName);
-            eventEntity.setUser_id(usersRepository.findByUid(userId));
-            eventRepository.save((eventEntity));
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
+    public boolean addQuestion(@RequestParam String questionString,
+                               @RequestParam String answer1,
+                               @RequestParam String answer2,
+                               @RequestParam String answer3,
+                               @RequestParam String answer4,
+                               @RequestParam String answer5
+                               ) {
+        return disciplineService.addTestQuestion(questionString,answer1,answer2,answer3,answer4,answer5);
         //todo bunları servise çek burada kod olmasın
     }
 

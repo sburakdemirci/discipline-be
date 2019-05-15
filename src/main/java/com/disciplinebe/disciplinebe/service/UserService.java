@@ -128,6 +128,19 @@ public class UserService {
             return list.get(0).getId();
         }
     }
+    public boolean changeUserDisciplineLevel(int userId, int disciplineLevel){
+        UsersEntity usersEntity=getUserById(userId);
+        usersEntity.setDiscipline_level(disciplineLevel);
+
+        try {
+            usersRepository.save(usersEntity);
+            return true;
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+            return false;
+        }
+    }
 
 
 

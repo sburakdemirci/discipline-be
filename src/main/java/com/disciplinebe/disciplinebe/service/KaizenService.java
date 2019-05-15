@@ -34,17 +34,13 @@ public class KaizenService {
     @Autowired
     GoalRepository goalRepository;
 
-
-
     public List<TimeSlot> getOccupiedSlots(int userId, Date date)
     {
         SimpleDateFormat simpleDateformat = new SimpleDateFormat("E"); // the day of the week abbreviated
         String dayFromDate= simpleDateformat.format(date);
 
         List<TimeSlot> timeSlots = new ArrayList();
-
         List<EventEntity> eventEntities = eventDatabaseService.getEventsByDate(userId,date);
-
         List<WorksForGoalEntity> worksForGoalEntities = goalDatabaseService.getWorksForGoalByDate(userId,date);
         List<RoutineEntity> routineEntities = routineDatabaseService.findByUserId(userId);
 
@@ -55,7 +51,6 @@ public class KaizenService {
            timeSlot.setTimeFinish(eventEntity.getTime_finish());
            timeSlots.add(timeSlot);
         }
-
         for(WorksForGoalEntity worksForGoalEntity:worksForGoalEntities)
 
         {
@@ -64,7 +59,6 @@ public class KaizenService {
             timeSlot.setTimeFinish(worksForGoalEntity.getStart_time()+worksForGoalEntity.getDuration());
             timeSlots.add(timeSlot);
         }
-
         for (RoutineEntity routineEntity: routineEntities)
         {
             String[] splitted= routineEntity.getSelected_week_days().split(",");
@@ -118,7 +112,6 @@ public class KaizenService {
                 emptySlots.add(timeSlot);
                 return emptySlots;
             }
-
             if(!checkOccupied)
             {
                 if(tmpStart>0)
@@ -142,11 +135,9 @@ public class KaizenService {
                     tmpStart=0;
                     tmpFinish=0;
                 }
-
             checkOccupied=false;
         }
         return emptySlots;
-
     }
     public boolean reduceTotalWorkMinutes(UsersEntity user, int duration)
     {
@@ -175,14 +166,9 @@ public class KaizenService {
         {
             Date tomorrow = new Date(date.getTime()+(1000*60*60*24*i));
             createWorkForSingleGoal(userId,tomorrow);
-
         }
-
         return false;
-
     }
-
-
 // todo work create edilince total'den düş. tekrar create edilirken silinen workleri totale ekle
     public boolean createWorkForSingleGoal(int userId, Date date )
     {
@@ -209,7 +195,6 @@ public class KaizenService {
                     slotStart=timeSlot.getTimeStart();
                     break;
                 }
-
             }
             if(checkForSizeEnought)
             {
@@ -221,14 +206,12 @@ public class KaizenService {
                 worksForGoalEntity.setUser_id(goalEntities.get(0).getUser_id());
                 try {
                     worksForGoalRepository.save(worksForGoalEntity);
-
                     return reduceTotalWorkMinutes(goalEntities.get(0).getUser_id(),disciplineLevel);
                 }
                 catch (Exception e)
                 {
                     e.printStackTrace();
                 }
-
             }
             else
             {
@@ -258,16 +241,11 @@ public class KaizenService {
                             worksForGoalEntity.setUser_id(goalEntities.get(0).getUser_id());
                             timeleft-=worksForGoalEntity.getDuration();
                             worksForGoalRepository.save(worksForGoalEntity);
-
                         }
-
                     }
-
                 }
-
             }
         }
-
         return false;
     }
 //todo aylara göre gönderebilirsin. bir model yaparsın int month, int year ve list<EventGoalRoutine> olur. kıps
@@ -275,8 +253,6 @@ public class KaizenService {
     public List<EventGoalRoutineModel> findEventGoalRoutineByMonth(int userId, int month, int year)
     {
 
-//        SimpleDateFormat simpleDateformat = new SimpleDateFormat("E"); // the day of the week abbreviated
-//        String dayFromDate= simpleDateformat.format(date);
         List<EventGoalRoutineModel> eventGoalRoutineModels = new ArrayList<>();
 
         List<WorksForGoalEntity> worksForGoalEntities = goalDatabaseService.getWorksByDateBetween(userId,month,year);
@@ -306,42 +282,46 @@ public class KaizenService {
             eventGoalRoutineModel.setType("e");
             eventGoalRoutineModels.add(eventGoalRoutineModel);
         }
+        if(routineEntities.size()>0 )
+        {
+            String[] splitted= routineEntities.get(0).getSelected_week_days().split(",");
+            SimpleDateFormat simpleDateFormat= new SimpleDateFormat("yyyy-MM-dd");
+            SimpleDateFormat simpleDateformat = new SimpleDateFormat("E"); // the day of the week abbreviated
+            LocalDate localDate= LocalDate.of (year,month,1);
+            Date date1 =Date.valueOf(localDate);
+            String dayFromDate="";
 
-//        if(routineEntities.size()>0 )
-//        {
-//            String[] splitted= routineEntities.get(0).getSelected_week_days().split(",");
-//
-//            for(String split: splitted)
-//            {
-//                if(dayFromDate.equalsIgnoreCase(split))
-//                {
-//
-//                    EventGoalRoutineModel eventGoalRoutineModel = new EventGoalRoutineModel();
-//                    eventGoalRoutineModel.setDate(date);
-//                    eventGoalRoutineModel.setDuration(routineEntities.get(0).getTime_finish()-routineEntities.get(0).getTime_start());
-//                    eventGoalRoutineModel.setId(routineEntities.get(0).getRoutine_id());
-//                    eventGoalRoutineModel.setName(routineEntities.get(0).getRoutine_name());
-//                    eventGoalRoutineModel.setStartSlotTime(routineEntities.get(0).getTime_start());
-//                    eventGoalRoutineModel.setType("r");
-//                    eventGoalRoutineModels.add(eventGoalRoutineModel);
-//                }
-//            }
-//
-//
-//
-//        }
 
+            while(localDate.getMonthValue()<=month)
+            {
+                 dayFromDate= simpleDateformat.format(date1);
+                System.out.printf(localDate.toString());
+                for(String split: splitted)
+                {
+                    if(dayFromDate.equalsIgnoreCase(split))
+                    {
+                        EventGoalRoutineModel eventGoalRoutineModel = new EventGoalRoutineModel();
+                        eventGoalRoutineModel.setDate(date1);
+                        eventGoalRoutineModel.setDuration(routineEntities.get(0).getTime_finish()-routineEntities.get(0).getTime_start());
+                        eventGoalRoutineModel.setId(routineEntities.get(0).getRoutine_id());
+                        eventGoalRoutineModel.setName(routineEntities.get(0).getRoutine_name());
+                        eventGoalRoutineModel.setStartSlotTime(routineEntities.get(0).getTime_start());
+                        eventGoalRoutineModel.setType("r");
+                        eventGoalRoutineModels.add(eventGoalRoutineModel);
+                    }
+
+                }
+                localDate= localDate.plusDays(1);
+                date1=Date.valueOf(localDate);
+
+            }
+
+        }
         Collections.sort(eventGoalRoutineModels, (o1, o2) -> o1.getDate().compareTo(o2.getDate()));
-
         return eventGoalRoutineModels;
-
-
-
     }
 
-
     //Todo selected days split yapan fonksiyon
-
 
 
 
@@ -362,5 +342,4 @@ public class KaizenService {
     //  çalışma zamanından düşsün
 
     //todo etkinlik , rutin ve goal olarak etkinlikleri günlük olarak çekip içeriye basacak bir servis yaz
-
 }
